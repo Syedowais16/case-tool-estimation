@@ -61,7 +61,8 @@ app = FastAPI(
     title=settings.app_name,
     description=settings.api_description,
     version=settings.app_version,
-    lifespan=lifespan
+    lifespan=lifespan,
+    redirect_slashes=False
 )
 
 # Add CORS middleware
