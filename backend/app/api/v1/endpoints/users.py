@@ -139,7 +139,7 @@ async def update_user(
     return user
 
 
-@router.get("/")
+@router.get("")
 async def list_users(
     skip: int = 0,
     limit: int = 50,
