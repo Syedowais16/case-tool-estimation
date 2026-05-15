@@ -9,6 +9,7 @@ settings = get_settings()
 # Create database engine
 engine = create_engine(
     settings.database_url,
+    connect_args={"check_same_thread": False},
     echo=settings.database_echo,
     poolclass=QueuePool,
     pool_size=settings.database_pool_size,
