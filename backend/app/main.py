@@ -31,16 +31,26 @@ settings = get_settings()
 #     logger.info("Shutting down CASE Tool API...")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Application lifespan context manager"""
+
     logger.info("Starting CASE Tool API...")
 
     init_db()
     logger.info("Database initialized")
 
-    # 🔥 ADD THIS LINE
-    from app.db.seed_data import seed_database
-    seed_database()
+    # 👇 FIX: import correct function
+    try:
+        from app.db.seed_data import seed_demo_portfolio
+        from app.db.base import SessionLocal
 
-    logger.info("Database seeded successfully")
+        db = SessionLocal()
+        seed_demo_portfolio(db)
+        db.close()
+
+        logger.info("Seed data loaded successfully")
+
+    except Exception as e:
+        logger.error(f"Seeding failed: {str(e)}")
 
     yield
 
