@@ -17,19 +17,34 @@ logger = logging.getLogger(__name__)
 settings = get_settings()
 
 
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     """Application lifespan context manager"""
+#     # Startup
+#     logger.info("Starting CASE Tool API...")
+#     init_db()
+#     logger.info("Database initialized")
+    
+#     yield
+    
+#     # Shutdown
+#     logger.info("Shutting down CASE Tool API...")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan context manager"""
-    # Startup
     logger.info("Starting CASE Tool API...")
+
     init_db()
     logger.info("Database initialized")
-    
-    yield
-    
-    # Shutdown
-    logger.info("Shutting down CASE Tool API...")
 
+    # 🔥 ADD THIS LINE
+    from app.db.seed_data import seed_database
+    seed_database()
+
+    logger.info("Database seeded successfully")
+
+    yield
+
+    logger.info("Shutting down CASE Tool API...")
 
 # Create FastAPI application
 app = FastAPI(

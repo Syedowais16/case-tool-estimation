@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     workers: int = 4
     
     # Database Settings
-    database_url: str = "sqlite:///./case_tool.db"
+    database_url: str = "sqlite:////app/case_tool.db"
     database_echo: bool = False
     database_pool_size: int = 20
     database_max_overflow: int = 10
