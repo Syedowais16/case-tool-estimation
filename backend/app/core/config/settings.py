@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 7
     
     # CORS Settings
-    cors_origins: List[str] = ["*"]  # Allow all origins by default
+    cors_origins: List[str] = ["*", "https://idyllic-dusk-a7f10a.netlify.app"]  # Allow all origins by default
     cors_credentials: bool = True
     cors_methods: List[str] = ["*"]
     cors_headers: List[str] = ["*"]
