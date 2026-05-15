@@ -5,7 +5,7 @@ const REFRESH_TOKEN_STORAGE_KEY = "refresh_token";
 function normalizeBaseUrl(url) {
     const trimmed = (url || "").trim().replace(/\/+$/, "");
     if (!trimmed) {
-        return "http://localhost:8000/api/v1";
+        return "https://cost-estimation-backend-production.up.railway.app/api/v1";
     }
 
     if (trimmed.endsWith("/api/v1")) {
@@ -27,7 +27,7 @@ function toQueryString(params = {}) {
 }
 
 export class APIClient {
-    constructor(baseURL = localStorage.getItem(API_BASE_URL_STORAGE_KEY) || "http://localhost:8000/api/v1") {
+    constructor(baseURL = localStorage.getItem(API_BASE_URL_STORAGE_KEY) || "https://cost-estimation-backend-production.up.railway.app/api/v1") {
         this.baseURL = normalizeBaseUrl(baseURL);
         this.token = localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
         this.refreshToken = localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY);
