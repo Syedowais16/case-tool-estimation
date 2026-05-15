@@ -1,0 +1,6 @@
+id,name,description,permissions
+1,Admin,Full system access,user_manage;project_manage;estimate_manage;report_generate;audit_view;model_manage
+2,Project Manager,Project and estimation management,project_manage;estimate_manage;report_generate;resource_manage
+3,Estimator,Cost estimation and analysis,estimate_manage;report_generate;historical_view
+4,Analyst,Project analysis and reporting,project_view;estimate_view;report_generate
+5,Viewer,Read-only access,project_view;estimate_view;report_view

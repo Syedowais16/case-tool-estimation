@@ -1,0 +1,39 @@
+<pptx>
+<slide>
+<h1>CASE Tool - Enterprise Software Cost Estimation</h1>
+<ul>
+<li><b>Project Title:</b> CASE Tool</li>
+<li><b>Problem Statement:</b> Accurate software cost estimation is critical but challenging. Manual methods are error-prone and inconsistent.</li>
+<li><b>Objective:</b> Provide an automated, robust, and auditable platform for software project cost estimation, risk management, and resource planning.</li>
+<li><b>Target Users:</b> Project Managers, Estimators, Analysts, Executives, Dev Teams</li>
+</ul>
+</slide>
+<slide>
+<h2>Features & Modules</h2>
+<ul>
+<li><b>Core Features:</b> Project management, cost estimation (COCOMO, FPA, Hybrid), scenario analysis, risk management, resource allocation, reporting, authentication, RBAC</li>
+<li><b>Major Modules:</b> Backend (FastAPI, SQLAlchemy, SQLite), Frontend (HTML5, CSS3, JS), Database (17 tables), API (50+ endpoints)</li>
+<li><b>Technologies:</b> Python, FastAPI, SQLAlchemy, Pydantic, JWT, HTML5, CSS3, Vanilla JS</li>
+<li><b>Frontend/Backend:</b> SPA with REST API, modular backend, normalized DB</li>
+</ul>
+</slide>
+<slide>
+<h2>System Workflow & Business Logic</h2>
+<ul>
+<li><b>User Flow:</b> Login/Register → Create Project → Add Estimates → Add Scenarios/Risks/Resources → Generate Reports</li>
+<li><b>Backend Processing:</b> Validates, authenticates, applies business logic, interacts with DB, returns results</li>
+<li><b>Database Interaction:</b> 17 tables, normalized, cascade, audit logs</li>
+<li><b>Main Business Logic:</b> Estimate calculation (COCOMO/FPA/Hybrid), scenario analysis, risk assessment, resource allocation, RBAC</li>
+</ul>
+</slide>
+<slide>
+<h2>Current Progress & Future Scope</h2>
+<ul>
+<li><b>Completed:</b> All modules, full integration, production-ready, documentation, one-click startup</li>
+<li><b>Implemented:</b> Authentication, RBAC, CRUD, estimation, reporting, validation, error handling</li>
+<li><b>Remaining:</b> ML-based estimation, external tool integration, advanced analytics, cloud deployment</li>
+<li><b>Future Enhancements:</b> Notifications, localization, accessibility AAA, cloud scaling</li>
+<li><b>Expected Outcomes:</b> Accurate, auditable, scalable cost estimation platform for real-world use</li>
+</ul>
+</slide>
+</pptx>

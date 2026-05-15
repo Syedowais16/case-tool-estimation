@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CASE Tool frontend for software estimation, portfolio planning, and analytics.">
+    <title>CASE Tool Workspace</title>
+    <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-grid"></div>
+
+    <div class="loading-bar" id="loadingBar"></div>
+
+    <section class="auth-shell" id="authView">
+        <div class="auth-story">
+            <span class="eyebrow">CASE Tool</span>
+            <h1>Estimate delivery like an operating room, not a spreadsheet graveyard.</h1>
+            <p>Connect project setup, estimation, scenario planning, risks, staffing, reporting, and model management in one place.</p>
+
+            <div class="story-grid">
+                <article class="story-card">
+                    <strong>Projects</strong>
+                    <p>Track baselines, versions, client context, and ownership.</p>
+                </article>
+                <article class="story-card">
+                    <strong>Estimates</strong>
+                    <p>Store effort, duration, cost, confidence, and function point analyses.</p>
+                </article>
+                <article class="story-card">
+                    <strong>Insights</strong>
+                    <p>Keep cost drivers, historical benchmarks, calibration models, and ML metadata close to the work.</p>
+                </article>
+            </div>
+
+            <div class="auth-callout">
+                <p><strong>Default seeded admin</strong></p>
+                <p><span class="mono">admin@example.com</span> / <span class="mono">admin123</span></p>
+            </div>
+        </div>
+
+        <div class="auth-panel">
+            <div class="auth-tabs">
+                <button class="auth-tab active" type="button" data-auth-tab="login">Sign In</button>
+                <button class="auth-tab" type="button" data-auth-tab="register">Register</button>
+            </div>
+
+            <form class="connection-card" id="authConnectionForm">
+                <label for="authApiBaseUrl">API Base URL</label>
+                <div class="inline-form">
+                    <input id="authApiBaseUrl" type="text" placeholder="http://localhost:8000/api/v1">
+                    <button class="btn btn-secondary" type="submit">Save</button>
+                </div>
+            </form>
+
+            <form class="form auth-form active" id="loginForm" data-auth-form="login">
+                <div class="field">
+                    <label for="loginEmail">Email</label>
+                    <input id="loginEmail" type="email" placeholder="admin@example.com" required>
+                </div>
+                <div class="field">
+                    <label for="loginPassword">Password</label>
+                    <input id="loginPassword" type="password" placeholder="Enter password" required>
+                </div>
+                <button class="btn btn-primary" type="submit">Enter Workspace</button>
+            </form>
+
+            <form class="form auth-form" id="registerForm" data-auth-form="register">
+                <div class="field-row">
+                    <div class="field">
+                        <label for="registerFullName">Full name</label>
+                        <input id="registerFullName" type="text" required>
+                    </div>
+                    <div class="field">
+                        <label for="registerUsername">Username</label>
+                        <input id="registerUsername" type="text" required>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label for="registerEmail">Email</label>
+                        <input id="registerEmail" type="email" required>
+                    </div>
+                    <div class="field">
+                        <label for="registerPhone">Phone</label>
+                        <input id="registerPhone" type="text">
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label for="registerOrganization">Organization</label>
+                        <input id="registerOrganization" type="text">
+                    </div>
+                    <div class="field">
+                        <label for="registerDepartment">Department</label>
+                        <input id="registerDepartment" type="text">
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label for="registerRoleId">Role</label>
+                        <select id="registerRoleId" required></select>
+                    </div>
+                    <div class="field">
+                        <label for="registerPassword">Password</label>
+                        <input id="registerPassword" type="password" minlength="8" required>
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit">Create Account</button>
+            </form>
+        </div>
+    </section>
+
+    <div class="workspace-shell hidden" id="workspaceShell">
+        <aside class="sidebar">
+            <div class="brand-block">
+                <span class="eyebrow">Control Deck</span>
+                <h2>CASE Tool</h2>
+                <p>Software estimation and delivery planning workspace.</p>
+            </div>
+
+            <nav class="side-nav" aria-label="Primary">
+                <button class="nav-link active" type="button" data-view-target="dashboard">Dashboard</button>
+                <button class="nav-link" type="button" data-view-target="projects">Projects</button>
+                <button class="nav-link" type="button" data-view-target="estimates">Estimates</button>
+                <button class="nav-link" type="button" data-view-target="scenarios">Scenarios</button>
+                <button class="nav-link" type="button" data-view-target="risks">Risks</button>
+                <button class="nav-link" type="button" data-view-target="resources">Resources</button>
+                <button class="nav-link" type="button" data-view-target="reports">Reports</button>
+                <button class="nav-link" type="button" data-view-target="intelligence">Intelligence</button>
+                <button class="nav-link" type="button" data-view-target="integrations">Integrations</button>
+                <button class="nav-link" type="button" data-view-target="admin">Admin</button>
+                <button class="nav-link" type="button" data-view-target="settings">Settings</button>
+            </nav>
+        </aside>
+
+        <div class="workspace-main">
+            <header class="topbar">
+                <div class="topbar-cluster">
+                    <label class="compact-field">
+                        <span>Active project</span>
+                        <select id="projectSwitcher"></select>
+                    </label>
+                    <button class="btn btn-secondary" type="button" id="refreshWorkspaceBtn">Refresh</button>
+                </div>
+
+                <div class="topbar-cluster topbar-status">
+                    <span class="status-badge" id="apiStatusBadge">Checking API</span>
+                    <span class="status-badge neutral" id="selectedProjectBadge">Project: none selected</span>
+                    <span class="status-badge neutral" id="userBadge">Loading user</span>
+                    <button class="btn btn-ghost" type="button" id="logoutBtn">Logout</button>
+                </div>
+            </header>
+
+            <main class="view-stack">
+                <section class="view-panel active" data-view="dashboard">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">Portfolio overview</span>
+                            <h1>Dashboard</h1>
+                        </div>
+                    </div>
+                    <div class="metrics-grid" id="dashboardMetrics"></div>
+                    <div class="analytics-grid" id="dashboardAnalyticsGrid"></div>
+                    <div id="dashboardSpotlight"></div>
+                    <div class="split-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Recent Projects</h2>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                            <th>Budget</th>
+                                            <th>Team</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentProjectsBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+                        <article class="panel stacked-panel">
+                            <div class="panel-head">
+                                <h2>Selected Project Signals</h2>
+                            </div>
+                            <div class="mini-panel">
+                                <h3>Recent Estimates</h3>
+                                <ul class="plain-list" id="recentEstimatesList"></ul>
+                            </div>
+                            <div class="mini-panel">
+                                <h3>Risk Summary</h3>
+                                <ul class="plain-list" id="dashboardRiskSummary"></ul>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="view-panel" data-view="projects">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">Foundation</span>
+                            <h1>Projects</h1>
+                            <p class="context-banner" id="projectsContextBanner"></p>
+                        </div>
+                    </div>
+                    <div class="split-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Create or Edit Project</h2>
+                            </div>
+                            <form class="form" id="projectForm">
+                                <input id="projectFormId" type="hidden">
+                                <div class="field">
+                                    <label for="projectName">Project name</label>
+                                    <input id="projectName" type="text" required>
+                                </div>
+                                <div class="field">
+                                    <label for="projectDescription">Description</label>
+                                    <textarea id="projectDescription" rows="4"></textarea>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="projectStatus">Status</label>
+                                        <select id="projectStatus">
+                                            <option value="planning">Planning</option>
+                                            <option value="in_progress">In Progress</option>
+                                            <option value="on_hold">On Hold</option>
+                                            <option value="completed">Completed</option>
+                                            <option value="archived">Archived</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label for="projectBudget">Budget</label>
+                                        <input id="projectBudget" type="number" min="0" step="1000">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="projectTeamSize">Team size</label>
+                                        <input id="projectTeamSize" type="number" min="1" step="1">
+                                    </div>
+                                    <div class="field">
+                                        <label for="projectClientName">Client</label>
+                                        <input id="projectClientName" type="text">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="projectManager">Project manager</label>
+                                        <input id="projectManager" type="text">
+                                    </div>
+                                    <div class="field">
+                                        <label for="projectDepartment">Department</label>
+                                        <input id="projectDepartment" type="text">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="projectStartDate">Start date</label>
+                                        <input id="projectStartDate" type="datetime-local">
+                                    </div>
+                                    <div class="field">
+                                        <label for="projectEndDate">End date</label>
+                                        <input id="projectEndDate" type="datetime-local">
+                                    </div>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Save Project</button>
+                                    <button class="btn btn-ghost" type="button" id="projectFormReset">Reset</button>
+                                </div>
+                            </form>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Project Register</h2>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                            <th>Client</th>
+                                            <th>Budget</th>
+                                            <th>Team</th>
+                                            <th>Versions</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="projectTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="split-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Project Versions</h2>
+                            </div>
+                            <form class="form" id="versionForm">
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="versionNumber">Version number</label>
+                                        <input id="versionNumber" type="number" min="1" step="1" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="versionDescription">Description</label>
+                                        <input id="versionDescription" type="text">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="versionScope">Scope</label>
+                                    <textarea id="versionScope" rows="3"></textarea>
+                                </div>
+                                <div class="field">
+                                    <label for="versionAssumptions">Assumptions</label>
+                                    <textarea id="versionAssumptions" rows="3"></textarea>
+                                </div>
+                                <div class="field">
+                                    <label for="versionConstraints">Constraints</label>
+                                    <textarea id="versionConstraints" rows="3"></textarea>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Add Version</button>
+                                    <button class="btn btn-ghost" type="button" id="versionFormReset">Reset</button>
+                                </div>
+                            </form>
+                        </article>
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Version Timeline</h2>
+                            </div>
+                            <div class="stack-list" id="versionList"></div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="view-panel" data-view="estimates">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">Forecasting</span>
+                            <h1>Estimates</h1>
+                            <p class="context-banner" id="estimateContextBanner"></p>
+                        </div>
+                    </div>
+                    <div class="split-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Create or Edit Estimate</h2>
+                            </div>
+                            <form class="form" id="estimateForm">
+                                <input id="estimateFormId" type="hidden">
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="estimateVersionId">Project version</label>
+                                        <select id="estimateVersionId" required></select>
+                                    </div>
+                                    <div class="field">
+                                        <label for="estimateMethod">Method</label>
+                                        <select id="estimateMethod" required>
+                                            <option value="COCOMO">COCOMO</option>
+                                            <option value="FPA">Function Point Analysis</option>
+                                            <option value="Hybrid">Hybrid</option>
+                                            <option value="Expert Judgment">Expert Judgment</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="estimateStatus">Workflow status</label>
+                                        <select id="estimateStatus">
+                                            <option value="draft">Draft</option>
+                                            <option value="submitted">Submitted</option>
+                                            <option value="approved">Approved</option>
+                                            <option value="rejected">Rejected</option>
+                                            <option value="final">Final</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label for="estimateTeamSize">Estimated team size</label>
+                                        <input id="estimateTeamSize" type="number" min="1" step="1">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="estimateEffort">Effort hours</label>
+                                        <input id="estimateEffort" type="number" min="0" step="0.1" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="estimateDuration">Duration months</label>
+                                        <input id="estimateDuration" type="number" min="0" step="0.1" required>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="estimateCost">Estimated cost</label>
+                                        <input id="estimateCost" type="number" min="0" step="1000" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="estimateConfidence">Confidence %</label>
+                                        <input id="estimateConfidence" type="number" min="0" max="100" step="1">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="estimateConfidenceLow">Confidence low</label>
+                                        <input id="estimateConfidenceLow" type="number" min="0" step="1000">
+                                    </div>
+                                    <div class="field">
+                                        <label for="estimateConfidenceHigh">Confidence high</label>
+                                        <input id="estimateConfidenceHigh" type="number" min="0" step="1000">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="estimateAssumptions">Assumptions</label>
+                                    <textarea id="estimateAssumptions" rows="3"></textarea>
+                                </div>
+                                <div class="field">
+                                    <label for="estimateRisks">Risks</label>
+                                    <textarea id="estimateRisks" rows="3"></textarea>
+                                </div>
+                                <div class="field">
+                                    <label for="estimateNotes">Notes</label>
+                                    <textarea id="estimateNotes" rows="3"></textarea>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Save Estimate</button>
+                                    <button class="btn btn-ghost" type="button" id="estimateFormReset">Reset</button>
+                                </div>
+                            </form>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Estimate Register</h2>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Method</th>
+                                            <th>Status</th>
+                                            <th>Cost</th>
+                                            <th>Effort</th>
+                                            <th>Duration</th>
+                                            <th>Confidence</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="estimateTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="split-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Estimate Detail</h2>
+                            </div>
+                            <div id="estimateDetail"></div>
+                        </article>
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Function Points</h2>
+                            </div>
+                            <form class="form" id="functionPointForm">
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="fpIlfCount">ILF count</label>
+                                        <input id="fpIlfCount" type="number" min="0" value="0">
+                                    </div>
+                                    <div class="field">
+                                        <label for="fpIlfComplexity">ILF complexity</label>
+                                        <select id="fpIlfComplexity">
+                                            <option value="">Select</option>
+                                            <option value="simple">Simple</option>
+                                            <option value="average">Average</option>
+                                            <option value="complex">Complex</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="fpEifCount">EIF count</label>
+                                        <input id="fpEifCount" type="number" min="0" value="0">
+                                    </div>
+                                    <div class="field">
+                                        <label for="fpEifComplexity">EIF complexity</label>
+                                        <select id="fpEifComplexity">
+                                            <option value="">Select</option>
+                                            <option value="simple">Simple</option>
+                                            <option value="average">Average</option>
+                                            <option value="complex">Complex</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="fpEiCount">EI count</label>
+                                        <input id="fpEiCount" type="number" min="0" value="0">
+                                    </div>
+                                    <div class="field">
+                                        <label for="fpEiComplexity">EI complexity</label>
+                                        <select id="fpEiComplexity">
+                                            <option value="">Select</option>
+                                            <option value="simple">Simple</option>
+                                            <option value="average">Average</option>
+                                            <option value="complex">Complex</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="fpEoCount">EO count</label>
+                                        <input id="fpEoCount" type="number" min="0" value="0">
+                                    </div>
+                                    <div class="field">
+                                        <label for="fpEoComplexity">EO complexity</label>
+                                        <select id="fpEoComplexity">
+                                            <option value="">Select</option>
+                                            <option value="simple">Simple</option>
+                                            <option value="average">Average</option>
+                                            <option value="complex">Complex</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="fpEqCount">EQ count</label>
+                                        <input id="fpEqCount" type="number" min="0" value="0">
+                                    </div>
+                                    <div class="field">
+                                        <label for="fpEqComplexity">EQ complexity</label>
+                                        <select id="fpEqComplexity">
+                                            <option value="">Select</option>
+                                            <option value="simple">Simple</option>
+                                            <option value="average">Average</option>
+                                            <option value="complex">Complex</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="fpUnadjusted">Unadjusted FP</label>
+                                        <input id="fpUnadjusted" type="number" min="0" step="0.1" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="fpVaf">VAF</label>
+                                        <input id="fpVaf" type="number" min="0" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="fpAdjusted">Adjusted FP</label>
+                                    <input id="fpAdjusted" type="number" min="0" step="0.1" required>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Save Function Points</button>
+                                    <button class="btn btn-ghost" type="button" id="functionPointFormReset">Reset</button>
+                                </div>
+                            </form>
+                            <div class="stack-list" id="functionPointList"></div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="view-panel" data-view="scenarios">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">What-if planning</span>
+                            <h1>Scenarios</h1>
+                            <p class="context-banner" id="scenarioContextBanner"></p>
+                        </div>
+                    </div>
+                    <div class="split-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Scenario Builder</h2>
+                            </div>
+                            <form class="form" id="scenarioForm">
+                                <input id="scenarioFormId" type="hidden">
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="scenarioName">Scenario name</label>
+                                        <input id="scenarioName" type="text" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="scenarioType">Scenario type</label>
+                                        <select id="scenarioType">
+                                            <option value="realistic">Realistic</option>
+                                            <option value="optimistic">Optimistic</option>
+                                            <option value="pessimistic">Pessimistic</option>
+                                            <option value="custom">Custom</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="scenarioDescription">Description</label>
+                                    <textarea id="scenarioDescription" rows="3"></textarea>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="scenarioEffortAdjustment">Effort multiplier</label>
+                                        <input id="scenarioEffortAdjustment" type="number" step="0.05" value="1">
+                                    </div>
+                                    <div class="field">
+                                        <label for="scenarioDurationAdjustment">Duration multiplier</label>
+                                        <input id="scenarioDurationAdjustment" type="number" step="0.05" value="1">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="scenarioCostAdjustment">Cost multiplier</label>
+                                        <input id="scenarioCostAdjustment" type="number" step="0.05" value="1">
+                                    </div>
+                                    <div class="field">
+                                        <label for="scenarioTeamAdjustment">Team size multiplier</label>
+                                        <input id="scenarioTeamAdjustment" type="number" step="0.05" value="1">
+                                    </div>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Save Scenario</button>
+                                    <button class="btn btn-ghost" type="button" id="scenarioFormReset">Reset</button>
+                                </div>
+                            </form>
+                        </article>
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Scenario Outcomes</h2>
+                            </div>
+                            <p class="subtle" id="scenarioSummary"></p>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Effort</th>
+                                            <th>Duration</th>
+                                            <th>Cost</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scenarioTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="view-panel" data-view="risks">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">Exposure control</span>
+                            <h1>Risks</h1>
+                            <p class="context-banner" id="riskContextBanner"></p>
+                        </div>
+                    </div>
+                    <div class="split-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Risk Register Form</h2>
+                            </div>
+                            <form class="form" id="riskForm">
+                                <input id="riskFormId" type="hidden">
+                                <div class="field">
+                                    <label for="riskDescription">Description</label>
+                                    <textarea id="riskDescription" rows="3" required></textarea>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="riskCategory">Category</label>
+                                        <input id="riskCategory" type="text" placeholder="technical, schedule, resource" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="riskOwner">Owner</label>
+                                        <input id="riskOwner" type="text">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="riskProbability">Probability (0-1)</label>
+                                        <input id="riskProbability" type="number" min="0" max="1" step="0.01" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="riskImpact">Impact (0-1)</label>
+                                        <input id="riskImpact" type="number" min="0" max="1" step="0.01" required>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="riskStatus">Status</label>
+                                        <select id="riskStatus">
+                                            <option value="active">Active</option>
+                                            <option value="mitigated">Mitigated</option>
+                                            <option value="accepted">Accepted</option>
+                                            <option value="avoided">Avoided</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label for="riskEffortContingency">Effort contingency</label>
+                                        <input id="riskEffortContingency" type="number" min="0" step="0.1" value="0">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="riskCostContingency">Cost contingency</label>
+                                        <input id="riskCostContingency" type="number" min="0" step="100" value="0">
+                                    </div>
+                                    <div class="field">
+                                        <label for="riskMitigation">Mitigation strategy</label>
+                                        <textarea id="riskMitigation" rows="2"></textarea>
+                                    </div>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Save Risk</button>
+                                    <button class="btn btn-ghost" type="button" id="riskFormReset">Reset</button>
+                                </div>
+                            </form>
+                        </article>
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Risk Register</h2>
+                            </div>
+                            <div class="subtle" id="riskExposureSummary"></div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Description</th>
+                                            <th>Probability</th>
+                                            <th>Impact</th>
+                                            <th>Owner</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="riskTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="view-panel" data-view="resources">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">Capacity</span>
+                            <h1>Resources</h1>
+                            <p class="context-banner" id="resourceContextBanner"></p>
+                        </div>
+                    </div>
+                    <div class="split-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Resource Allocation</h2>
+                            </div>
+                            <form class="form" id="resourceForm">
+                                <input id="resourceFormId" type="hidden">
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="resourceUserId">Team member</label>
+                                        <select id="resourceUserId" required></select>
+                                    </div>
+                                    <div class="field">
+                                        <label for="resourceRole">Role</label>
+                                        <input id="resourceRole" type="text" required>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="resourceAllocation">Allocation %</label>
+                                        <input id="resourceAllocation" type="number" min="0" max="100" step="1" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="resourceHourlyRate">Hourly rate</label>
+                                        <input id="resourceHourlyRate" type="number" min="0" step="10">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="resourceStartDate">Start date</label>
+                                        <input id="resourceStartDate" type="datetime-local">
+                                    </div>
+                                    <div class="field">
+                                        <label for="resourceEndDate">End date</label>
+                                        <input id="resourceEndDate" type="datetime-local">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="resourceAvailability">Availability</label>
+                                        <select id="resourceAvailability">
+                                            <option value="available">Available</option>
+                                            <option value="busy">Busy</option>
+                                            <option value="unavailable">Unavailable</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label for="resourceSkills">Skills</label>
+                                        <input id="resourceSkills" type="text" placeholder="Python, React, QA">
+                                    </div>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Save Allocation</button>
+                                    <button class="btn btn-ghost" type="button" id="resourceFormReset">Reset</button>
+                                </div>
+                            </form>
+                        </article>
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Allocation Board</h2>
+                            </div>
+                            <div class="subtle" id="resourceUtilizationSummary"></div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Role</th>
+                                            <th>Allocation</th>
+                                            <th>Rate</th>
+                                            <th>Availability</th>
+                                            <th>Skills</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resourceTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="view-panel" data-view="reports">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">Narrative output</span>
+                            <h1>Reports</h1>
+                            <p class="context-banner" id="reportContextBanner"></p>
+                        </div>
+                    </div>
+                    <div class="split-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Generate Report</h2>
+                            </div>
+                            <form class="form" id="reportForm">
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="reportTitle">Title</label>
+                                        <input id="reportTitle" type="text" value="Executive Estimate Summary" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="reportType">Type</label>
+                                        <select id="reportType">
+                                            <option value="estimate">Estimate</option>
+                                            <option value="variance">Variance</option>
+                                            <option value="comparison">Comparison</option>
+                                            <option value="executive_summary">Executive summary</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="reportFormat">Format</label>
+                                    <select id="reportFormat">
+                                        <option value="html">HTML</option>
+                                        <option value="json">JSON</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox-grid">
+                                    <label><input id="reportIncludeConfidence" type="checkbox" checked> Include confidence intervals</label>
+                                    <label><input id="reportIncludeRisks" type="checkbox" checked> Include risks</label>
+                                    <label><input id="reportIncludeScenarios" type="checkbox" checked> Include scenarios</label>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Generate Report</button>
+                                    <button class="btn btn-ghost" type="button" id="reportFormReset">Reset</button>
+                                </div>
+                            </form>
+                        </article>
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Stored Reports</h2>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Type</th>
+                                            <th>Format</th>
+                                            <th>Created</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reportTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+                    <article class="panel">
+                        <div class="panel-head">
+                            <h2>Preview</h2>
+                        </div>
+                        <div class="report-preview" id="reportPreview"></div>
+                    </article>
+                </section>
+
+                <section class="view-panel" data-view="intelligence">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">Reference intelligence</span>
+                            <h1>Intelligence</h1>
+                            <p class="context-banner" id="intelligenceBanner"></p>
+                        </div>
+                    </div>
+                    <div class="triple-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Cost Drivers</h2>
+                            </div>
+                            <form class="form" id="costDriverForm">
+                                <div class="field">
+                                    <label for="costDriverName">Name</label>
+                                    <input id="costDriverName" type="text" required>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="costDriverCategory">Category</label>
+                                        <input id="costDriverCategory" type="text" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="costDriverImpact">Impact factor</label>
+                                        <input id="costDriverImpact" type="number" min="0.5" max="2" step="0.01" value="1" required>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="costDriverEffort">Effort multiplier</label>
+                                        <input id="costDriverEffort" type="number" min="0" step="0.01" value="1" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="costDriverCost">Cost multiplier</label>
+                                        <input id="costDriverCost" type="number" min="0" step="0.01" value="1" required>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="costDriverDuration">Duration multiplier</label>
+                                        <input id="costDriverDuration" type="number" min="0" step="0.01" value="1" required>
+                                    </div>
+                                    <div class="field checkbox-field">
+                                        <label><input id="costDriverActive" type="checkbox" checked> Active</label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="costDriverDescription">Description</label>
+                                    <textarea id="costDriverDescription" rows="3"></textarea>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Save Cost Driver</button>
+                                    <button class="btn btn-ghost" type="button" id="costDriverFormReset">Reset</button>
+                                </div>
+                            </form>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            <th>Impact</th>
+                                            <th>Effort</th>
+                                            <th>Cost</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="costDriverTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Historical Projects</h2>
+                            </div>
+                            <form class="form" id="historicalProjectForm">
+                                <div class="field">
+                                    <label for="historicalProjectName">Project name</label>
+                                    <input id="historicalProjectName" type="text" required>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="historicalIndustry">Industry</label>
+                                        <input id="historicalIndustry" type="text">
+                                    </div>
+                                    <div class="field">
+                                        <label for="historicalType">Type</label>
+                                        <input id="historicalType" type="text">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="historicalExperience">Team experience</label>
+                                        <select id="historicalExperience">
+                                            <option value="">Select</option>
+                                            <option value="junior">Junior</option>
+                                            <option value="mid">Mid</option>
+                                            <option value="senior">Senior</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label for="historicalTeamSize">Team size</label>
+                                        <input id="historicalTeamSize" type="number" min="1" step="1" required>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="historicalEffort">Actual effort</label>
+                                        <input id="historicalEffort" type="number" min="0" step="0.1" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="historicalDuration">Actual duration</label>
+                                        <input id="historicalDuration" type="number" min="0" step="0.1" required>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="historicalCost">Actual cost</label>
+                                        <input id="historicalCost" type="number" min="0" step="100" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="historicalLanguage">Language</label>
+                                        <input id="historicalLanguage" type="text">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="historicalDatabase">Database</label>
+                                        <input id="historicalDatabase" type="text">
+                                    </div>
+                                    <div class="field">
+                                        <label for="historicalArchitecture">Architecture</label>
+                                        <input id="historicalArchitecture" type="text">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="historicalProductivity">Productivity</label>
+                                        <input id="historicalProductivity" type="number" min="0" step="0.01">
+                                    </div>
+                                    <div class="field">
+                                        <label for="historicalDefectDensity">Defect density</label>
+                                        <input id="historicalDefectDensity" type="number" min="0" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="historicalScope">Scope description</label>
+                                    <textarea id="historicalScope" rows="3"></textarea>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Add Historical Project</button>
+                                    <button class="btn btn-ghost" type="button" id="historicalProjectFormReset">Reset</button>
+                                </div>
+                            </form>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Project</th>
+                                            <th>Industry</th>
+                                            <th>Effort</th>
+                                            <th>Duration</th>
+                                            <th>Cost</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historicalProjectTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Calibration & ML Models</h2>
+                            </div>
+                            <form class="form" id="calibrationModelForm">
+                                <div class="field">
+                                    <label for="calibrationName">Calibration name</label>
+                                    <input id="calibrationName" type="text" required>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="calibrationType">Model type</label>
+                                        <input id="calibrationType" type="text" placeholder="COCOMO, FPA" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="calibrationDataCount">Calibration data count</label>
+                                        <input id="calibrationDataCount" type="number" min="1" step="1" required>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="calibrationOrganization">Organization</label>
+                                        <input id="calibrationOrganization" type="text">
+                                    </div>
+                                    <div class="field">
+                                        <label for="calibrationIndustry">Industry</label>
+                                        <input id="calibrationIndustry" type="text">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="calibrationAccuracy">Accuracy %</label>
+                                        <input id="calibrationAccuracy" type="number" min="0" step="0.1">
+                                    </div>
+                                    <div class="field">
+                                        <label for="calibrationCoefficients">Coefficients JSON</label>
+                                        <textarea id="calibrationCoefficients" rows="2" placeholder='{"a": 2.9, "b": 1.1}'></textarea>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="calibrationDescription">Description</label>
+                                    <textarea id="calibrationDescription" rows="3"></textarea>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Save Calibration Model</button>
+                                    <button class="btn btn-ghost" type="button" id="calibrationModelFormReset">Reset</button>
+                                </div>
+                            </form>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Data</th>
+                                            <th>Accuracy</th>
+                                            <th>R^2</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="calibrationModelTableBody"></tbody>
+                                </table>
+                            </div>
+
+                            <hr class="section-rule">
+
+                            <form class="form" id="mlModelForm">
+                                <div class="field">
+                                    <label for="mlName">ML model name</label>
+                                    <input id="mlName" type="text" required>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="mlType">Model type</label>
+                                        <input id="mlType" type="text" placeholder="regression" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="mlAlgorithm">Algorithm</label>
+                                        <input id="mlAlgorithm" type="text" placeholder="random_forest" required>
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="mlTrainingCount">Training data count</label>
+                                        <input id="mlTrainingCount" type="number" min="1" step="1" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="mlFeatureCount">Feature count</label>
+                                        <input id="mlFeatureCount" type="number" min="1" step="1" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="mlFeatureNames">Feature names</label>
+                                    <input id="mlFeatureNames" type="text" placeholder="team_size, complexity, language">
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="mlAccuracy">Accuracy</label>
+                                        <input id="mlAccuracy" type="number" min="0" step="0.1">
+                                    </div>
+                                    <div class="field">
+                                        <label for="mlPrecision">Precision</label>
+                                        <input id="mlPrecision" type="number" min="0" step="0.1">
+                                    </div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="mlRecall">Recall</label>
+                                        <input id="mlRecall" type="number" min="0" step="0.1">
+                                    </div>
+                                    <div class="field">
+                                        <label for="mlF1">F1 score</label>
+                                        <input id="mlF1" type="number" min="0" step="0.1">
+                                    </div>
+                                </div>
+                                <div class="checkbox-grid">
+                                    <label><input id="mlIsActive" type="checkbox" checked> Active</label>
+                                    <label><input id="mlIsProduction" type="checkbox"> Production candidate</label>
+                                </div>
+                                <div class="field">
+                                    <label for="mlDescription">Description</label>
+                                    <textarea id="mlDescription" rows="3"></textarea>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Save ML Model</button>
+                                    <button class="btn btn-ghost" type="button" id="mlModelFormReset">Reset</button>
+                                </div>
+                            </form>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Algorithm</th>
+                                            <th>Training Rows</th>
+                                            <th>Accuracy</th>
+                                            <th>Stage</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="mlModelTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="view-panel" data-view="admin">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">Access and people</span>
+                            <h1>Admin</h1>
+                            <p class="context-banner" id="adminBanner"></p>
+                        </div>
+                    </div>
+                    <div class="split-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Create Role</h2>
+                            </div>
+                            <form class="form" id="roleForm">
+                                <div class="field">
+                                    <label for="roleName">Role name</label>
+                                    <input id="roleName" type="text" required>
+                                </div>
+                                <div class="field">
+                                    <label for="roleDescription">Description</label>
+                                    <textarea id="roleDescription" rows="3"></textarea>
+                                </div>
+                                <div class="field">
+                                    <label for="rolePermissions">Permissions</label>
+                                    <input id="rolePermissions" type="text" placeholder="projects,estimates,reports">
+                                </div>
+                                <div class="checkbox-grid">
+                                    <label><input id="roleIsActive" type="checkbox" checked> Active</label>
+                                </div>
+                                <div class="button-row">
+                                    <button class="btn btn-primary" type="submit">Save Role</button>
+                                    <button class="btn btn-ghost" type="button" id="roleFormReset">Reset</button>
+                                </div>
+                            </form>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Role</th>
+                                            <th>Description</th>
+                                            <th>Permissions</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="roleTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Users</h2>
+                            </div>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Username</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="userTableBody"></tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="view-panel" data-view="integrations">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">External planning data</span>
+                            <h1>Integrations</h1>
+                            <p class="context-banner" id="integrationBanner"></p>
+                        </div>
+                    </div>
+
+                    <div class="triple-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Connection Status</h2>
+                            </div>
+                            <div id="integrationStatusPanel"></div>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Jira Sync</h2>
+                            </div>
+                            <form class="form" id="jiraSyncForm">
+                                <div class="field">
+                                    <label for="jiraJql">Jira JQL</label>
+                                    <input id="jiraJql" type="text" placeholder="project = ABC ORDER BY updated DESC">
+                                </div>
+                                <div class="field">
+                                    <label for="jiraMaxResults">Max results</label>
+                                    <input id="jiraMaxResults" type="number" min="1" max="100" step="1" value="50">
+                                </div>
+                                <button class="btn btn-primary" type="submit">Sync Jira</button>
+                            </form>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Trello Sync</h2>
+                            </div>
+                            <form class="form" id="trelloSyncForm">
+                                <div class="field">
+                                    <label for="trelloBoardId">Trello board ID</label>
+                                    <input id="trelloBoardId" type="text" placeholder="Leave blank to use backend .env">
+                                </div>
+                                <button class="btn btn-primary" type="submit">Sync Trello</button>
+                            </form>
+                        </article>
+                    </div>
+
+                    <article class="panel">
+                        <div class="panel-head">
+                            <h2>Integration Sync History</h2>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Provider</th>
+                                        <th>External ID</th>
+                                        <th>Mapped Project</th>
+                                        <th>Tasks</th>
+                                        <th>Completed</th>
+                                        <th>Progress</th>
+                                        <th>Synced</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="integrationSyncTableBody"></tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="view-panel" data-view="settings">
+                    <div class="section-head">
+                        <div>
+                            <span class="eyebrow">Preferences</span>
+                            <h1>Settings</h1>
+                        </div>
+                    </div>
+                    <div class="triple-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Profile</h2>
+                            </div>
+                            <form class="form" id="profileForm">
+                                <div class="field">
+                                    <label for="profileFullName">Full name</label>
+                                    <input id="profileFullName" type="text" required>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="profileUsername">Username</label>
+                                        <input id="profileUsername" type="text" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="profileRole">Role</label>
+                                        <input id="profileRole" type="text" readonly>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="profileEmail">Email</label>
+                                    <input id="profileEmail" type="email" required>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field">
+                                        <label for="profilePhone">Phone</label>
+                                        <input id="profilePhone" type="text">
+                                    </div>
+                                    <div class="field">
+                                        <label for="profileOrganization">Organization</label>
+                                        <input id="profileOrganization" type="text">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="profileDepartment">Department</label>
+                                    <input id="profileDepartment" type="text">
+                                </div>
+                                <button class="btn btn-primary" type="submit">Save Profile</button>
+                            </form>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Password</h2>
+                            </div>
+                            <form class="form" id="passwordForm">
+                                <div class="field">
+                                    <label for="currentPassword">Current password</label>
+                                    <input id="currentPassword" type="password" minlength="8" required>
+                                </div>
+                                <div class="field">
+                                    <label for="newPassword">New password</label>
+                                    <input id="newPassword" type="password" minlength="8" required>
+                                </div>
+                                <div class="field">
+                                    <label for="confirmPassword">Confirm new password</label>
+                                    <input id="confirmPassword" type="password" minlength="8" required>
+                                </div>
+                                <button class="btn btn-primary" type="submit">Change Password</button>
+                            </form>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-head">
+                                <h2>Connection</h2>
+                            </div>
+                            <form class="form" id="connectionForm">
+                                <div class="field">
+                                    <label for="connectionApiBaseUrl">API base URL</label>
+                                    <input id="connectionApiBaseUrl" type="text">
+                                </div>
+                                <button class="btn btn-secondary" type="submit">Save Connection</button>
+                            </form>
+                        </article>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+
+    <script type="module" src="./assets/js/app.js"></script>
+</body>
+</html>

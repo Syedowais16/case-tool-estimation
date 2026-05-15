@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: casetool_postgres
+    environment:
+      POSTGRES_USER: casetool
+      POSTGRES_PASSWORD: casetool
+      POSTGRES_DB: casetool_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schemas/casetool_schema.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U casetool"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: ./deployment/docker/Dockerfile.backend
+    container_name: casetool_backend
+    environment:
+      DATABASE_URL: postgresql://casetool:casetool@postgres:5432/casetool_db
+      ENVIRONMENT: development
+      DEBUG: "True"
+      SECRET_KEY: dev-secret-key-change-in-production
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: python run.py
+
+  # Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: ./deployment/docker/Dockerfile.frontend
+    container_name: casetool_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      BACKEND_URL: http://backend:8000
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: casetool_network

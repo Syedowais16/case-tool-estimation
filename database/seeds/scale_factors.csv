@@ -1,0 +1,25 @@
+name,description,factor_value,factor_type,applies_to
+Distributed System,Distributed multi-site development,1.22,effort,development_environment
+Single Site,Collocated team at single site,1.00,effort,development_environment
+Off-site Remote,Distributed remote team,1.10,effort,development_environment
+Use of COTS,Commercial off-the-shelf software integration,0.85,effort,technology_choice
+Custom Development,Custom software development,1.00,effort,technology_choice
+Legacy Integration,Integration with legacy systems,1.35,effort,technology_choice
+Agile Process,Agile development methodology,0.88,effort,process_maturity
+Iterative Process,Iterative development process,1.00,effort,process_maturity
+Waterfall Process,Waterfall development process,1.15,effort,process_maturity
+Rapid Prototyping,Rapid prototyping approach,0.95,duration,schedule_flexibility
+Phased Delivery,Phased release schedule,1.00,duration,schedule_flexibility
+Single Release,Single large release,1.20,duration,schedule_flexibility
+Small Team 2-5,Team size 2-5 people,0.90,effort,team_size
+Medium Team 6-10,Team size 6-10 people,1.00,effort,team_size
+Large Team 11-20,Team size 11-20 people,1.15,effort,team_size
+Very Large Team 20+,Team size over 20 people,1.35,effort,team_size
+Web Application,Web-based application,0.95,cost,application_type
+Desktop Application,Desktop/standalone application,1.00,cost,application_type
+Mobile Application,Mobile application (iOS/Android),1.15,cost,application_type
+Enterprise System,Large-scale enterprise system,1.25,cost,application_type
+Low Security,Non-sensitive data and operations,0.85,effort,security_requirements
+Standard Security,Industry-standard security,1.00,effort,security_requirements
+High Security,High-security requirements,1.40,effort,security_requirements
+Government Security,Government/military-grade security,2.00,effort,security_requirements
