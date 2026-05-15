@@ -9,7 +9,7 @@ from app.core.security.security import get_current_user
 router = APIRouter(prefix="/projects", tags=["projects"])
 
 
-@router.post("/", response_model=ProjectResponse)
+@router.post("", response_model=ProjectResponse)
 async def create_project(
     project_data: ProjectCreate,
     db: Session = Depends(get_db),
@@ -103,7 +103,7 @@ async def delete_project(
     return {"message": "Project deleted successfully"}
 
 
-@router.get("/")
+@router.get("")
 async def list_projects(
     skip: int = 0,
     limit: int = 50,
